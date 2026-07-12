@@ -95,6 +95,10 @@ class WifiSelectionActivity final : public Activity {
   void selectNetwork(int index);
   void attemptConnection();
   void checkConnectionStatus();
+  void disableModemPowerSave();
+  void applyDisplayHostname();
+  void disableAutoReconnect();
+  void logConnectionDiagnostics();
   std::string getSignalStrengthIndicator(int32_t rssi) const;
 
   void onComplete(bool connected);
