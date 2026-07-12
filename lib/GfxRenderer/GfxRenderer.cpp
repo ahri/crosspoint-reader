@@ -151,7 +151,7 @@ static void renderCharScaled(const GfxRenderer& renderer, GfxRenderer::RenderMod
   const EpdGlyph* glyph = fontFamily.getGlyph(cp, style);
   if (!glyph) return;
 
-  const EpdFontData* fontData = fontFamily.getData(style);
+  const EpdFontData* fontData = fontFamily.getDataForCodepoint(cp, style);
   const uint8_t* bitmap = renderer.getGlyphBitmap(fontData, glyph);
   if (!bitmap) return;
 
@@ -222,7 +222,7 @@ static void renderCharImpl(const GfxRenderer& renderer, GfxRenderer::RenderMode 
     return;
   }
 
-  const EpdFontData* fontData = fontFamily.getData(style);
+  const EpdFontData* fontData = fontFamily.getDataForCodepoint(cp, style);
   const bool is2Bit = fontData->is2Bit;
   const uint8_t width = glyph->width;
   const uint8_t height = glyph->height;

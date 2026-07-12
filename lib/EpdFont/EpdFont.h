@@ -6,9 +6,17 @@ class EpdFont {
 
  public:
   const EpdFontData* data;
+  const EpdFont* fallback = nullptr;
+
   explicit EpdFont(const EpdFontData* data) : data(data) {}
   ~EpdFont() = default;
+
+  void setFallback(const EpdFont* fb) { fallback = fb; }
   void getTextDimensions(const char* string, int* w, int* h) const;
+
+  /// Returns true if this font directly owns a glyph for the codepoint
+  /// (checks interval table + on-demand handler, does NOT traverse fallback).
+  bool hasOwnGlyph(uint32_t cp) const;
 
   const EpdGlyph* getGlyph(uint32_t cp) const;
 

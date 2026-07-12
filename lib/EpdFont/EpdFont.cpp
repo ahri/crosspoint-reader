@@ -154,6 +154,31 @@ uint32_t EpdFont::applyLigatures(uint32_t cp, const char*& text) const {
   return cp;
 }
 
+bool EpdFont::hasOwnGlyph(const uint32_t cp) const {
+  const int count = data->intervalCount;
+  if (count == 0 && !data->glyphMissHandler) return false;
+
+  if (count > 0) {
+    const EpdUnicodeInterval* intervals = data->intervals;
+    const auto* end = intervals + count;
+
+    const auto it = std::upper_bound(
+        intervals, end, cp, [](uint32_t value, const EpdUnicodeInterval& interval) { return value < interval.first; });
+
+    if (it != intervals) {
+      const auto& interval = *(it - 1);
+      if (cp <= interval.last) return true;
+    }
+  }
+
+  // On-demand loading (SD card fonts).
+  if (data->glyphMissHandler) {
+    if (data->glyphMissHandler(data->glyphMissCtx, cp)) return true;
+  }
+
+  return false;
+}
+
 const EpdGlyph* EpdFont::getGlyph(const uint32_t cp) const {
   const int count = data->intervalCount;
   if (count == 0 && !data->glyphMissHandler) return nullptr;
@@ -182,8 +207,14 @@ const EpdGlyph* EpdFont::getGlyph(const uint32_t cp) const {
     if (loaded) return loaded;
   }
 
+  if (fallback) {
+    const EpdGlyph* fbGlyph = fallback->getGlyph(cp);
+    if (fbGlyph) return fbGlyph;
+  }
+
   if (cp != REPLACEMENT_GLYPH) {
     return getGlyph(REPLACEMENT_GLYPH);
   }
+
   return nullptr;
 }
