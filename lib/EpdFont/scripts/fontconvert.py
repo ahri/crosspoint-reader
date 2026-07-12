@@ -266,6 +266,7 @@ for i_start, i_end in unvalidated_intervals:
 
 for face in font_stack:
     face.set_char_size(size << 6, size << 6, 150, 150)
+metrics_face = font_stack[-1]
 
 total_size = 0
 all_glyphs = []
@@ -882,12 +883,11 @@ if compress:
 
     for first_idx, count in groups:
         # Concatenate bitmap data for this group
-        packed_len = 0
         group_aligned = bytearray()
         for gi in range(first_idx, first_idx + count):
             props, packed = all_glyphs[gi]
-            # Update glyph's dataOffset to be within-group offset (packed offset)
-            within_group_offset = packed_len
+            # Update glyph's dataOffset to be within-group offset in the byte-aligned data
+            within_group_offset = len(group_aligned)
             old_props = modified_glyph_props[gi]
             modified_glyph_props[gi] = GlyphProps(
                 width=old_props.width,
@@ -899,7 +899,6 @@ if compress:
                 data_offset=within_group_offset,
                 code_point=old_props.code_point,
             )
-            packed_len += len(packed)
             group_aligned.extend(to_byte_aligned(packed, old_props.width, old_props.height))
 
         # Compress byte-aligned data with raw DEFLATE (no zlib/gzip header)
@@ -991,9 +990,9 @@ print(f"    {font_name}Bitmaps,")
 print(f"    {font_name}Glyphs,")
 print(f"    {font_name}Intervals,")
 print(f"    {len(intervals)},")
-print(f"    {norm_ceil(face.size.height)},")
-print(f"    {norm_ceil(face.size.ascender)},")
-print(f"    {norm_floor(face.size.descender)},")
+print(f"    {norm_ceil(metrics_face.size.height)},")
+print(f"    {norm_ceil(metrics_face.size.ascender)},")
+print(f"    {norm_floor(metrics_face.size.descender)},")
 print(f"    {'true' if is2Bit else 'false'},")
 if compress:
     print(f"    {font_name}Groups,")
