@@ -96,6 +96,10 @@ EpdFontFamily notosans18FontFamily(&notosans18RegularFont, &notosans18BoldFont, 
 
 #endif  // OMIT_FONTS
 
+// Emoji fallback font — provides glyphs for emoji and symbols not present in the
+// main text fonts. Only one size is needed since emoji render at their own cell size.
+EpdFont notoEmoji14RegularFont(&noto_emoji_14);
+
 EpdFont smallFont(&notosans_8_regular);
 EpdFontFamily smallFontFamily(&smallFont);
 
@@ -298,6 +302,49 @@ void setupDisplayAndFonts(bool seamless = false) {
 
   // Discover and load SD card fonts
   sdFontSystem.begin(renderer);
+
+  // Set emoji fallback on all fonts so missing glyphs (emoji, symbols) render
+  // instead of showing as invisible zero-width characters.
+  notoserif14RegularFont.setFallback(&notoEmoji14RegularFont);
+  notoserif14BoldFont.setFallback(&notoEmoji14RegularFont);
+  notoserif14ItalicFont.setFallback(&notoEmoji14RegularFont);
+  notoserif14BoldItalicFont.setFallback(&notoEmoji14RegularFont);
+#ifndef OMIT_FONTS
+  notoserif12RegularFont.setFallback(&notoEmoji14RegularFont);
+  notoserif12BoldFont.setFallback(&notoEmoji14RegularFont);
+  notoserif12ItalicFont.setFallback(&notoEmoji14RegularFont);
+  notoserif12BoldItalicFont.setFallback(&notoEmoji14RegularFont);
+  notoserif16RegularFont.setFallback(&notoEmoji14RegularFont);
+  notoserif16BoldFont.setFallback(&notoEmoji14RegularFont);
+  notoserif16ItalicFont.setFallback(&notoEmoji14RegularFont);
+  notoserif16BoldItalicFont.setFallback(&notoEmoji14RegularFont);
+  notoserif18RegularFont.setFallback(&notoEmoji14RegularFont);
+  notoserif18BoldFont.setFallback(&notoEmoji14RegularFont);
+  notoserif18ItalicFont.setFallback(&notoEmoji14RegularFont);
+  notoserif18BoldItalicFont.setFallback(&notoEmoji14RegularFont);
+
+  notosans12RegularFont.setFallback(&notoEmoji14RegularFont);
+  notosans12BoldFont.setFallback(&notoEmoji14RegularFont);
+  notosans12ItalicFont.setFallback(&notoEmoji14RegularFont);
+  notosans12BoldItalicFont.setFallback(&notoEmoji14RegularFont);
+  notosans14RegularFont.setFallback(&notoEmoji14RegularFont);
+  notosans14BoldFont.setFallback(&notoEmoji14RegularFont);
+  notosans14ItalicFont.setFallback(&notoEmoji14RegularFont);
+  notosans14BoldItalicFont.setFallback(&notoEmoji14RegularFont);
+  notosans16RegularFont.setFallback(&notoEmoji14RegularFont);
+  notosans16BoldFont.setFallback(&notoEmoji14RegularFont);
+  notosans16ItalicFont.setFallback(&notoEmoji14RegularFont);
+  notosans16BoldItalicFont.setFallback(&notoEmoji14RegularFont);
+  notosans18RegularFont.setFallback(&notoEmoji14RegularFont);
+  notosans18BoldFont.setFallback(&notoEmoji14RegularFont);
+  notosans18ItalicFont.setFallback(&notoEmoji14RegularFont);
+  notosans18BoldItalicFont.setFallback(&notoEmoji14RegularFont);
+#endif  // OMIT_FONTS
+  smallFont.setFallback(&notoEmoji14RegularFont);
+  ui10RegularFont.setFallback(&notoEmoji14RegularFont);
+  ui10BoldFont.setFallback(&notoEmoji14RegularFont);
+  ui12RegularFont.setFallback(&notoEmoji14RegularFont);
+  ui12BoldFont.setFallback(&notoEmoji14RegularFont);
 
   LOG_DBG("MAIN", "Fonts setup");
 }
