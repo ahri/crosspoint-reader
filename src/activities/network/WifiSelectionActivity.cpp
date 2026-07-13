@@ -237,9 +237,18 @@ void WifiSelectionActivity::attemptConnection() {
   LOG_DBG("WIFI", "WiFi.begin() initiated async connection for ssid=%s", selectedSSID.c_str());
   LOG_DBG("WIFI", "attemptConnection: ssid=%s requiresPwd=%d hostname=%s", selectedSSID.c_str(),
           selectedRequiresPassword, WiFi.getHostname());
+
+  // On single-core ESP32-C3, the WiFi task needs CPU time to begin processing the
+  // async connection (probe request, etc.) before the e-ink display refresh starts,
+  // which holds the SPI bus and may delay WiFi task scheduling. Yield explicitly.
+  vTaskDelay(50 / portTICK_PERIOD_MS);
 }
 
-void WifiSelectionActivity::disableModemPowerSave() { WiFi.setSleep(WIFI_PS_NONE); }
+void WifiSelectionActivity::disableModemPowerSave() {
+  const bool staStarted = WiFi.STA.started();
+  const bool ok = WiFi.setSleep(WIFI_PS_NONE);
+  LOG_DBG("WIFI", "disableModemPowerSave: staStarted=%d ok=%d sleep=%d", staStarted, ok, WiFi.getSleep());
+}
 
 void WifiSelectionActivity::applyDisplayHostname() {
   // Set hostname so routers show "CrossPoint-Reader-AABBCCDDEEFF" instead of "esp32-XXXXXXXXXXXX"
